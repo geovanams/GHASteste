@@ -10,18 +10,30 @@ namespace UnsecureApp.Controllers
 
         public string ReadFile(string userInput)
         {
-            using (FileStream fs = File.Open(userInput, FileMode.Open))
+            if (IsValidPath(userInput))
             {
-                byte[] b = new byte[1024];
-                UTF8Encoding temp = new UTF8Encoding(true);
-
-                while (fs.Read(b, 0, b.Length) > 0)
+                using (FileStream fs = File.Open(userInput, FileMode.Open))
                 {
-                    return temp.GetString(b);
+                    byte[] b = new byte[1024];
+                    UTF8Encoding temp = new UTF8Encoding(true);
+
+                    while (fs.Read(b, 0, b.Length) > 0)
+                    {
+                        return temp.GetString(b);
+                    }
                 }
+            }
+            else
+            {
+                throw new ArgumentException("Invalid file path.");
             }
 
             return null;
+        }
+
+        private bool IsValidPath(string path)
+        {
+            return !(path.Contains("..") || path.Contains("/") || path.Contains("\\"));
         }
 
         public int GetProduct(string productName)
